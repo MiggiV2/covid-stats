@@ -1,7 +1,6 @@
 <template>
-  <div>
+  <div class="diagram">
     <LineChart ref="doughnutRef" :chartData="chartData" :options="options" />
-    <p> {{msg}} </p>
   </div>
 </template>
 
@@ -10,35 +9,21 @@ import { Chart, registerables } from "chart.js";
 import { computed, defineComponent, ref } from "vue";
 import { LineChart } from "vue-chart-3";
 
-// Can't access msg in setup?!
-
 Chart.register(...registerables);
 
 export default defineComponent({
   name: "Home",
-  props: {
-    msg: String
-  },
   components: { LineChart },
   setup() {
     var labelsResponse = ["loading"];
     var dataReponse = [1];
 
+    const urlParams = new URLSearchParams(window.location.search);
     const data = ref(dataReponse);
 
-    fetch("http://localhost:8888/covid-stats-api")
-      .then((respons) => {
-        return respons.json();
-      })
-      .then((respons) => {
-        labelsResponse = [];
-        dataReponse = [];
-        respons.stats.forEach((element) => {
-          labelsResponse.push(element.date);
-          dataReponse.push(element.inzidenz);
-        });
-        data.value = dataReponse;
-      });
+    loadData();
+
+    // Change Colors!!
 
     const chartData = computed(() => ({
       labels: labelsResponse,
@@ -46,11 +31,7 @@ export default defineComponent({
         {
           data: data.value,
           backgroundColor: [
-            "#77CEFF",
-            "#0079AF",
-            "#123E6B",
-            "#97B0C4",
-            "#A5C8ED",
+            "#FFFFFF"
           ],
         },
       ],
@@ -60,16 +41,44 @@ export default defineComponent({
       responsive: true,
       plugins: {
         legend: {
-          position: 'top',
+          position: "top",
         },
         title: {
           display: true,
-          text: 'Covid-Stats',
+          text: urlParams.get("id") + " | Covid-Stats",
+          color: "white",
         },
       },
     });
 
     return { chartData, options };
+
+    function loadData() {
+      fetch(
+        "http://localhost:8888/covid-stats-api/get-landkreis-stats?id=" +
+          urlParams.get("id") +
+          "&range=" +
+          urlParams.get("range")
+      )
+        .then((respons) => {
+          return respons.json();
+        })
+        .then((respons) => {
+          labelsResponse = [];
+          dataReponse = [];
+          respons.forEach((element) => {
+            labelsResponse.push(element.date);
+            dataReponse.push(element.cases7_bl_per_100k);
+          });
+          data.value = dataReponse;
+        });
+    }
   },
 });
 </script>
+
+<style>
+.diagram {
+  margin-top: 4rem;
+}
+</style>

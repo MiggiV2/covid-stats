@@ -1,4 +1,38 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp, h } from 'vue'
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.min.js";
+import "bootstrap-icons/font/bootstrap-icons.css"
 
-createApp(App).mount('#app')
+import LandKreis from './LandKreis.vue'
+import NoPage from './NoPage.vue';
+import Start from './Start.vue';
+
+require('@/assets/style.css');
+
+const routes = {
+    '/': Start,
+    '/landkreis': LandKreis,
+    '/bundesland': LandKreis,
+}
+
+const SimpleRouter = {
+    data: () => ({
+        currentRoute: window.location.pathname
+    }),
+
+    computed: {
+        CurrentComponent() {
+            return routes[this.currentRoute] || NoPage
+        }
+    },
+
+    render() {
+        return h(this.CurrentComponent)
+    }
+}
+
+const app = createApp(SimpleRouter);
+
+app.mount('#app')
+
+export var HOST = "http://localhost:8888/";
