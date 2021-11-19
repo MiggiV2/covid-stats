@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css"
 
-import LandKreis from './LandKreis.vue'
+import Stats from './Stats.vue'
 import NoPage from './NoPage.vue';
 import Start from './Start.vue';
 
@@ -11,8 +11,8 @@ require('@/assets/style.css');
 
 const routes = {
     '/': Start,
-    '/landkreis': LandKreis,
-    '/bundesland': LandKreis,
+    '/landkreis': Stats,
+    '/bundesland': Stats,
 }
 
 const SimpleRouter = {

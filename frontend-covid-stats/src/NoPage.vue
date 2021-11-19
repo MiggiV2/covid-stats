@@ -5,4 +5,6 @@
 
 <script setup>
 import Header from "./components/Header.vue";
+
+document.title = '404 | Covid-Stats';
 </script>

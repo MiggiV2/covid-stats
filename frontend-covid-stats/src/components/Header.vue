@@ -12,28 +12,8 @@
           data-bs-target="#searchModal"
           @click="loadLandKreise"
         >
-          <h4>Search <i class="bi-search"></i></h4>
+          <h4><a class="desktop">Search </a><i class="bi-search"></i></h4>
         </button>
-      </div>
-      <div class="col-auto">
-        <h4
-          class="nav-link dropdown-toggle"
-          href="#"
-          id="navbarDropdown"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          {{ mode.text }}
-        </h4>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <li>
-            <a class="dropdown-item" @click="setMode(1)"> Landkreis </a>
-          </li>
-          <li>
-            <a class="dropdown-item" @click="setMode(2)"> Bundesland </a>
-          </li>
-        </ul>
       </div>
     </div>
   </div>
@@ -50,9 +30,9 @@
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="searchModalLabel">
+          <h3 class="modal-title" id="searchModalLabel">
             {{ mode.text }}
-          </h5>
+          </h3>
           <button
             type="button"
             class="btn-close"
@@ -61,12 +41,24 @@
           ></button>
         </div>
         <div class="modal-body">
-          <form
-            @submit="search"
-            onsubmit="return false"
-            v-if="mode.text == 'Landkreis'"
-          >
+          <form onsubmit="return false">
             <div class="input-group">
+              <button
+                class="btn btn-outline-light dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                {{ mode.text }}
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" @click="setMode(1)"> Landkreis </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" @click="setMode(2)"> Bundesland </a>
+                </li>
+              </ul>
               <input
                 autofocus
                 type="text"
@@ -79,16 +71,23 @@
                 <i class="bi-search"></i>
               </button>
             </div>
+            <div class="range">
+              <input
+                type="range"
+                class="form-range"
+                min="10"
+                max="90"
+                step="5"
+                id="customRange"
+                v-model="request.range"
+              /><label for="customRange" class="form-label"
+                >Range in days: {{ request.range }}</label
+              >
+            </div>
           </form>
           <div class="search-content">
             <h4 v-for="(item, index) in request.content" :key="index">
-              <a
-                :href="'landkreis?id=' + item + '&range=30'"
-                v-if="mode.text == 'Landkreis'"
-              >
-                {{ item }}
-              </a>
-              <a :href="'bundesland?id=' + item + '&range=30'" v-else>
+              <a :href="mode.text.toLowerCase() + '?id=' + item + '&range=' + request.range" @click="saveRange()">
                 {{ item }}
               </a>
             </h4>
@@ -109,9 +108,29 @@ var mode = reactive({
 
 var request = reactive({
   query: "",
+  range: localStorage.getItem("range") ? localStorage.getItem("range") : 30,
   data: [],
   content: [],
 });
+
+var bundesLaender = [
+  "Bremen",
+  "Saarland",
+  "Mecklenburg-Vorpommern",
+  "Schleswig-Holstein",
+  "Hamburg",
+  "Sachsen-Anhalt",
+  "Brandenburg",
+  "Thüringen",
+  "Rheinland-Pfalz",
+  "Berlin",
+  "Niedersachsen",
+  "Sachsen",
+  "Hessen",
+  "Baden-Württemberg",
+  "Bayern",
+  "Nordrhein-Westfalen",
+];
 
 mode.text = localStorage.getItem("mode") == "1" ? "Landkreis" : "Bundesland";
 
@@ -120,26 +139,10 @@ function setMode(input) {
   localStorage.setItem("mode", input);
   mode.text = modeStr;
   if (input == 1) {
-    request.content = request.data;
+    setFirstForty();
   } else {
-    request.content = [
-      "Bremen",
-      "Saarland",
-      "Mecklenburg-Vorpommern",
-      "Schleswig-Holstein",
-      "Hamburg",
-      "Sachsen-Anhalt",
-      "Brandenburg",
-      "Thüringen",
-      "Rheinland-Pfalz",
-      "Berlin",
-      "Niedersachsen",
-      "Sachsen",
-      "Hessen",
-      "Baden-Württemberg",
-      "Bayern",
-      "Nordrhein-Westfalen",
-    ];
+    request.content = bundesLaender;
+    request.query = "";
   }
 }
 
@@ -155,17 +158,21 @@ function loadLandKreise() {
       .then((data) => {
         if (data != null) {
           request.data = data;
-          var min = data.length < 40 ? data.length : 40;
-          for (var i = 0; i < min; i++) {
-            request.content.push(data[i]);
-          }
+        }
+        if (localStorage.getItem("mode") == 1) {
+          setFirstForty();
         }
       });
+  }
+  if (localStorage.getItem("mode") == 1) {
+    setFirstForty();
   } else {
-    request.content = request.data;
+    request.content = bundesLaender;
+    request.query = "";
   }
 }
 
+// Bug -> searching only landkreise
 function updateContent() {
   request.content = [];
   if (request.query.length == 0) {
@@ -189,10 +196,23 @@ function updateContent() {
     }
   }
 }
+
+function setFirstForty() {
+  var min = request.data.length < 40 ? request.data.length : 40;
+  request.content = [];
+  for (var i = 0; i < min; i++) {
+    request.content.push(request.data[i]);
+  }
+}
+
+function saveRange()
+{
+  localStorage.setItem("range", request.range);
+}
 </script>
 
 
-<style>
+<style scoped>
 .header-wrapped {
   width: 100vw;
   height: 4rem;
@@ -227,9 +247,16 @@ h4 {
   padding-left: 2rem;
   padding-top: 1rem;
 }
+.search-content h4 {
+  margin-bottom: 1rem;
+}
 .input-group {
   max-width: 94%;
-  margin: auto;
+  margin: 1rem auto 1rem;
+}
+.range {
+  max-width: 94%;
+  margin: 1rem auto 0.4rem;
 }
 a {
   color: unset;
@@ -241,5 +268,13 @@ a {
 a:hover {
   color: unset;
   text-decoration: underline;
+}
+li a:hover {
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .desktop {
+    display: none;
+  }
 }
 </style>

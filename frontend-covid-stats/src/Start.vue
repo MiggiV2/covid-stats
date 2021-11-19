@@ -48,4 +48,6 @@
 
 <script setup>
 import Header from "./components/Header.vue";
+
+document.title = "Welcome | Covid-Stats";
 </script>

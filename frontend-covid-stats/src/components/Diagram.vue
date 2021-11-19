@@ -17,22 +17,24 @@ export default defineComponent({
   setup() {
     var labelsResponse = ["loading"];
     var dataReponse = [1];
-
     const urlParams = new URLSearchParams(window.location.search);
     const data = ref(dataReponse);
+    const path =
+      window.location.pathname == "/landkreis"
+        ? "get-landkreis-stats"
+        : "get-bundesland-stats";
 
     loadData();
-
-    // Change Colors!!
 
     const chartData = computed(() => ({
       labels: labelsResponse,
       datasets: [
         {
+          label: "Inzidenz",
           data: data.value,
-          backgroundColor: [
-            "#FFFFFF"
-          ],
+          backgroundColor: ["#FFFFFF"],
+          borderColor: ["#E0E0E0"],
+          borderWidth: 3,
         },
       ],
     }));
@@ -41,12 +43,37 @@ export default defineComponent({
       responsive: true,
       plugins: {
         legend: {
-          position: "top",
+          position: "hidden",
         },
         title: {
           display: true,
           text: urlParams.get("id") + " | Covid-Stats",
           color: "white",
+          font: {
+            size: 24,
+          },
+        },
+      },
+      scales: {
+        x: {
+          display: true,
+          ticks: {
+            color: "#E0E0E0"
+          },
+          grid: {
+            drawBorder: true,
+            color: "#919191"
+          },
+        },
+        y: {
+          display: true,
+          ticks: {
+            color: "#E0E0E0"
+          },
+          grid: {
+            drawBorder: true,
+            color: "#919191"
+          },
         },
       },
     });
@@ -55,7 +82,9 @@ export default defineComponent({
 
     function loadData() {
       fetch(
-        "http://localhost:8888/covid-stats-api/get-landkreis-stats?id=" +
+        "http://localhost:8888/covid-stats-api/" +
+          path +
+          "?id=" +
           urlParams.get("id") +
           "&range=" +
           urlParams.get("range")
@@ -67,7 +96,7 @@ export default defineComponent({
           labelsResponse = [];
           dataReponse = [];
           respons.forEach((element) => {
-            labelsResponse.push(element.date);
+            labelsResponse.push(element.date.substring(5));
             dataReponse.push(element.cases7_bl_per_100k);
           });
           data.value = dataReponse;
@@ -79,6 +108,7 @@ export default defineComponent({
 
 <style>
 .diagram {
-  margin-top: 4rem;
+  max-width: 95vw;
+  margin: 2rem auto;
 }
 </style>
