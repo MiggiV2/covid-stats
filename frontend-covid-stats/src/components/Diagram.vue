@@ -8,6 +8,7 @@
 import { Chart, registerables } from "chart.js";
 import { computed, defineComponent, ref } from "vue";
 import { LineChart } from "vue-chart-3";
+import { HOST } from "../main";
 
 Chart.register(...registerables);
 
@@ -58,21 +59,21 @@ export default defineComponent({
         x: {
           display: true,
           ticks: {
-            color: "#E0E0E0"
+            color: "#E0E0E0",
           },
           grid: {
             drawBorder: true,
-            color: "#919191"
+            color: "#919191",
           },
         },
         y: {
           display: true,
           ticks: {
-            color: "#E0E0E0"
+            color: "#E0E0E0",
           },
           grid: {
             drawBorder: true,
-            color: "#919191"
+            color: "#919191",
           },
         },
       },
@@ -82,7 +83,8 @@ export default defineComponent({
 
     function loadData() {
       fetch(
-        "http://localhost:8888/covid-stats-api/" +
+        HOST +
+          "covid-stats-api/" +
           path +
           "?id=" +
           urlParams.get("id") +
@@ -95,11 +97,23 @@ export default defineComponent({
         .then((respons) => {
           labelsResponse = [];
           dataReponse = [];
+          var counter = 0;
+          var moduloValue = Math.round(urlParams.get("range") / 30);
+          moduloValue = moduloValue == 0 ? 1 : moduloValue;
           respons.forEach((element) => {
-            labelsResponse.push(element.date.substring(5));
-            dataReponse.push(element.cases7_bl_per_100k);
+            if (
+              (screen.width < 768 && counter % moduloValue == 0) ||
+              screen.width > 768
+            ) {
+              labelsResponse.push(element.date.substring(5));
+              dataReponse.push(element.cases7_bl_per_100k);
+            }
+            counter++;
           });
           data.value = dataReponse;
+        })
+        .catch((e) => {
+          console.log(e);
         });
     }
   },

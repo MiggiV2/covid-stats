@@ -2,7 +2,7 @@
   <div class="header-wrapped">
     <div class="row header-content align-items-center">
       <div class="col-auto">
-        <h2 class="header-title"><a href="/">Covid-Stats</a></h2>
+        <h1 class="header-title"><a href="/">Covid-Stats</a></h1>
       </div>
       <div class="col"></div>
       <div class="col-auto">
@@ -67,6 +67,19 @@
                 v-model="request.query"
                 @input="updateContent"
               />
+              <!--
+               <input
+                autofocus
+                type="text"
+                class="form-control"
+                placeholder="Disabled!"
+                disabled
+                v-if="mode.text != 'Bundesland'"
+                v-else
+                v-model="request.query"
+                @input="updateContent"
+              />
+              -->
               <button type="submit" class="btn btn-primary">
                 <i class="bi-search"></i>
               </button>
@@ -76,7 +89,7 @@
                 type="range"
                 class="form-range"
                 min="10"
-                max="90"
+                max="120"
                 step="5"
                 id="customRange"
                 v-model="request.range"
@@ -87,7 +100,16 @@
           </form>
           <div class="search-content">
             <h4 v-for="(item, index) in request.content" :key="index">
-              <a :href="mode.text.toLowerCase() + '?id=' + item + '&range=' + request.range" @click="saveRange()">
+              <a
+                :href="
+                  mode.text.toLowerCase() +
+                  '?id=' +
+                  item +
+                  '&range=' +
+                  request.range
+                "
+                @click="saveRange()"
+              >
                 {{ item }}
               </a>
             </h4>
@@ -148,7 +170,7 @@ function setMode(input) {
 
 function loadLandKreise() {
   if (request.data.length == 0) {
-    fetch(HOST + "/covid-stats-api/landkreise")
+    fetch(HOST + "covid-stats-api/landkreise")
       .then((response) => {
         if (response.status == 200) {
           return response.json();
@@ -172,9 +194,32 @@ function loadLandKreise() {
   }
 }
 
-// Bug -> searching only landkreise
+// FeedBack -> Filter Funktion: von - bis
 function updateContent() {
   request.content = [];
+  if (mode.text == "Landkreis") {
+    updateContentFoLandKreis();
+  } else {
+    updateContentFoBundesLand();
+  }
+}
+
+function updateContentFoBundesLand() {
+  bundesLaender.forEach((item) => {
+    if (item.startsWith(request.query)) {
+      request.content.push(item);
+    }
+  });
+  if (request.content.length == 0) {
+    bundesLaender.forEach((item) => {
+      if (item.includes(request.query)) {
+        request.content.push(item);
+      }
+    });
+  }
+}
+
+function updateContentFoLandKreis() {
   if (request.query.length == 0) {
     // Set default
     var min = request.data.length < 40 ? request.data.length : 40;
@@ -205,8 +250,7 @@ function setFirstForty() {
   }
 }
 
-function saveRange()
-{
+function saveRange() {
   localStorage.setItem("range", request.range);
 }
 </script>
@@ -215,18 +259,22 @@ function saveRange()
 <style scoped>
 .header-wrapped {
   width: 100vw;
-  height: 4rem;
-  background-color: #3a3a41;
+  height: 4.3rem;
+  background-color: var(--background-color-secondary);
   border-bottom: 1px solid white;
   position: fixed;
 }
 .header-content {
-  width: 99%;
+  width: 95%;
   height: 100%;
+  margin: auto;
 }
 .header-title {
-  padding-top: 7px;
+  padding-top: 12px;
   padding-left: 7px;
+}
+.header-title:hover {
+  text-decoration: underline;
 }
 .header-dummy {
   height: 4rem;
@@ -235,20 +283,25 @@ function saveRange()
   padding-top: 14px;
   color: white;
 }
+#searchModalLabel {
+  margin-left: 2rem;
+}
 h4 {
   margin-top: 2px;
   margin-bottom: 2px;
 }
 .modal-content {
-  background: #4c4c55;
+  background: var(--background-color-primary);
 }
 .search-content {
   text-align: center;
   padding-left: 2rem;
-  padding-top: 1rem;
 }
 .search-content h4 {
   margin-bottom: 1rem;
+}
+.search-content a:hover {
+  text-decoration: underline;
 }
 .input-group {
   max-width: 94%;
@@ -263,6 +316,9 @@ a {
   text-decoration: unset;
 }
 .header-title a:hover {
+  text-decoration: unset;
+}
+h4 a:hover {
   text-decoration: unset;
 }
 a:hover {

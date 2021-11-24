@@ -1,3 +1,6 @@
+export var HOST = "http://localhost:8888/";
+// export var HOST = "http://192.168.255.18:8888/";
+
 import { createApp, h } from 'vue'
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
@@ -34,5 +37,3 @@ const SimpleRouter = {
 const app = createApp(SimpleRouter);
 
 app.mount('#app')
-
-export var HOST = "http://localhost:8888/";

@@ -1,6 +1,15 @@
+:root {
+    --background-color-secondary: #222831;
+    --background-color-primary: #393E46;
+    --accent-color: #2D323A;
+    --accent-color-2: #00FFF5;
+    --text-primary-color: rgb(233, 224, 224);
+    --text-secondary-color: rgb(247, 240, 240);
+}
+
 body {
-    background-color: #4C4C55;
-    color: white;
+    background-color: var(--background-color-primary);
+    color: var(--text-primary-color);
     margin: unset;
 }
 
@@ -9,3 +18,12 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
+.box {
+    text-align: center;
+    margin: 3rem auto;
+    background-color: var(--accent-color);
+    padding: 20px 10px 10px;
+    border: 1px solid white;
+    border-radius: 5px 10px;
+  }
