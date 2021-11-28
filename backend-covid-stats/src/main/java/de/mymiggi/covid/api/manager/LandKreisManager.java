@@ -20,12 +20,7 @@ public class LandKreisManager
 
 	public LandKreisManager()
 	{
-		List<RKILandKreis> list = client.getList(RKILandKreis.class);
-		list.forEach(land -> {
-			LandKreis current = new LandKreis(land);
-			landKreise.add(current);
-			addToCacheMap(current);
-		});
+		syncData();
 	}
 
 	/**
@@ -58,6 +53,35 @@ public class LandKreisManager
 	public List<String> getLandKreise()
 	{
 		return landKreisNames;
+	}
+
+	public void syncData()
+	{
+		List<RKILandKreis> list = client.getList(RKILandKreis.class);
+		landKreise.clear();
+		cache.clear();
+		list.forEach(land -> {
+			LandKreis current = new LandKreis(land);
+			landKreise.add(current);
+			addToCacheMap(current);
+		});
+	}
+
+	public boolean isUpToDate()
+	{
+		LocalDate yesterday = LocalDate.now().minusDays(1);
+		List<LandKreis> lastItems = new ArrayList<LandKreis>();
+		cache.values().stream()
+			.filter(list -> !list.isEmpty())
+			.forEach(list -> lastItems.add(sortList(list).get(list.size() - 1)));
+		for (LandKreis temp : lastItems)
+		{
+			if (temp.getDate().isAfter(yesterday))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private List<LandKreis> sortList(List<LandKreis> entrys)

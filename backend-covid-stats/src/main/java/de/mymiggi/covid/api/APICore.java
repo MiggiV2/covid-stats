@@ -12,14 +12,27 @@ import de.mymiggi.covid.api.actions.GetBundesLandStatsAction;
 import de.mymiggi.covid.api.actions.GetLandKreisStatsAction;
 import de.mymiggi.covid.api.manager.BundesLandManager;
 import de.mymiggi.covid.api.manager.LandKreisManager;
+import de.mymiggi.covid.api.saver.StartSaveThreadAction;
+import io.quarkus.runtime.Quarkus;
+import io.quarkus.runtime.annotations.QuarkusMain;
 
 @Path("/covid-stats-api")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@QuarkusMain
 public class APICore
 {
 	public static final BundesLandManager LAND_MANAGER = new BundesLandManager();
 	public static final LandKreisManager KREIS_MANAGER = new LandKreisManager();
+
+	public static void main(String... args)
+	{
+		if (!StartSaveThreadAction.isRunning())
+		{
+			StartSaveThreadAction.run();
+		}
+		Quarkus.run(args);
+	}
 
 	@GET
 	@Path("get-bundesland-stats")

@@ -91,20 +91,24 @@ export default defineComponent({
           "&range=" +
           urlParams.get("range")
       )
-        .then((respons) => {
-          return respons.json();
+        .then((response) => {
+          return response.json();
         })
-        .then((respons) => {
+        .then((response) => {
           labelsResponse = [];
           dataReponse = [];
           var counter = 0;
-          var moduloValue = Math.round(urlParams.get("range") / 30);
+          var moduloValue = Math.round(response.length / 30);
           moduloValue = moduloValue == 0 ? 1 : moduloValue;
-          respons.forEach((element) => {
+          console.log(moduloValue);
+          response.forEach((element) => {
             if (
-              (screen.width < 768 && counter % moduloValue == 0) ||
-              screen.width > 768
+              (screen.width < 768 || response.length > 100) &&
+              counter % moduloValue == 0
             ) {
+              labelsResponse.push(element.date.substring(5));
+              dataReponse.push(element.cases7_bl_per_100k);
+            } else if(screen.width > 768 && response.length < 100) {
               labelsResponse.push(element.date.substring(5));
               dataReponse.push(element.cases7_bl_per_100k);
             }

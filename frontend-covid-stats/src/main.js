@@ -1,5 +1,5 @@
-export var HOST = "http://localhost:8888/";
-// export var HOST = "http://192.168.255.18:8888/";
+//export var HOST = "http://localhost:8888/";
+export var HOST = "https://dns.mymiggi.de:8484/";
 
 import { createApp, h } from 'vue'
 import "bootstrap/dist/css/bootstrap.min.css";

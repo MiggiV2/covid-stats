@@ -22,12 +22,7 @@ public class BundesLandManager
 
 	public BundesLandManager()
 	{
-		List<RKIBundesLand> list = client.getList(RKIBundesLand.class);
-		list.forEach(land -> {
-			BundesLand current = new BundesLand(land);
-			laenderList.add(current);
-			initCacheMap(current, enumMap.get(current.getBundesLand().toUpperCase()));
-		});
+		syncData();
 	}
 
 	/**
@@ -50,7 +45,37 @@ public class BundesLandManager
 				responseList.add(temp);
 			}
 		}
+		// responseList.forEach(temp -> System.out.println(temp.getDate()));
 		return sortList(responseList);
+	}
+
+	public void syncData()
+	{
+		List<RKIBundesLand> list = client.getList(RKIBundesLand.class);
+		laenderList.clear();
+		cache.clear();
+		list.forEach(land -> {
+			BundesLand current = new BundesLand(land);
+			laenderList.add(current);
+			addToCacheMap(current, enumMap.get(current.getBundesLand().toUpperCase()));
+		});
+	}
+
+	public boolean isUpToDate()
+	{
+		LocalDate yesterday = LocalDate.now().minusDays(1);
+		List<BundesLand> lastItems = new ArrayList<BundesLand>();
+		cache.values().stream()
+			.filter(list -> !list.isEmpty())
+			.forEach(list -> lastItems.add(sortList(list).get(list.size() - 1)));
+		for (BundesLand temp : lastItems)
+		{
+			if (temp.getDate().isAfter(yesterday))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private List<BundesLand> sortList(List<BundesLand> entrys)
@@ -62,7 +87,7 @@ public class BundesLandManager
 		return response;
 	}
 
-	private void initCacheMap(BundesLand current, BundesLaender bundesLand)
+	private void addToCacheMap(BundesLand current, BundesLaender bundesLand)
 	{
 		if (cache.containsKey(bundesLand))
 		{

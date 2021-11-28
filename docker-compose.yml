@@ -1,0 +1,33 @@
+version: '3'
+
+networks:
+
+  covid-net:
+
+services:
+
+  database:
+    image: 'postgres:latest'
+    container_name: covid-stats-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - ./db-data/:/var/lib/postgresql/data/
+    networks:
+      - covid-net
+
+  backend:
+    image: 'mymiggi/covid-stats-backend:1.0.0'
+    container_name: covid-stats-backend
+    ports:
+      - 8484:8888
+    networks:
+      - covid-net    
+
+  frontend:
+    image: 'mymiggi/covid-stats-frontend:1.0.0'
+    container_name: covid-stats-frontend
+    ports:
+      - 3003:3000

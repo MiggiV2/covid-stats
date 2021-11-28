@@ -67,19 +67,6 @@
                 v-model="request.query"
                 @input="updateContent"
               />
-              <!--
-               <input
-                autofocus
-                type="text"
-                class="form-control"
-                placeholder="Disabled!"
-                disabled
-                v-if="mode.text != 'Bundesland'"
-                v-else
-                v-model="request.query"
-                @input="updateContent"
-              />
-              -->
               <button type="submit" class="btn btn-primary">
                 <i class="bi-search"></i>
               </button>
@@ -206,13 +193,13 @@ function updateContent() {
 
 function updateContentFoBundesLand() {
   bundesLaender.forEach((item) => {
-    if (item.startsWith(request.query)) {
+    if (item.toLowerCase().startsWith(request.query.toLowerCase())) {
       request.content.push(item);
     }
   });
   if (request.content.length == 0) {
     bundesLaender.forEach((item) => {
-      if (item.includes(request.query)) {
+      if (item.toLowerCase().includes(request.query.toLowerCase())) {
         request.content.push(item);
       }
     });
@@ -228,13 +215,13 @@ function updateContentFoLandKreis() {
     }
   } else {
     request.data.forEach((item) => {
-      if (item.startsWith(request.query)) {
+      if (item.toLowerCase().startsWith(request.query.toLowerCase())) {
         request.content.push(item);
       }
     });
     if (request.content.length == 0) {
       request.data.forEach((item) => {
-        if (item.includes(request.query)) {
+        if (item.toLowerCase().includes(request.query.toLowerCase())) {
           request.content.push(item);
         }
       });
