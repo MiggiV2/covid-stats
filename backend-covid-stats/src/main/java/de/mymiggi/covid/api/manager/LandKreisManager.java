@@ -59,6 +59,7 @@ public class LandKreisManager
 	{
 		List<RKILandKreis> list = client.getList(RKILandKreis.class);
 		landKreise.clear();
+		landKreisNames.clear();
 		cache.clear();
 		list.forEach(land -> {
 			LandKreis current = new LandKreis(land);

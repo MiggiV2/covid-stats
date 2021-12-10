@@ -8,12 +8,12 @@
 import { Chart, registerables } from "chart.js";
 import { computed, defineComponent, ref } from "vue";
 import { LineChart } from "vue-chart-3";
-import { HOST } from "../main";
+import { HOST_URL } from "../main";
 
 Chart.register(...registerables);
 
 export default defineComponent({
-  name: "Home",
+  name: "Home-Comp",
   components: { LineChart },
   setup() {
     var labelsResponse = ["loading"];
@@ -83,7 +83,7 @@ export default defineComponent({
 
     function loadData() {
       fetch(
-        HOST +
+        HOST_URL +
           "covid-stats-api/" +
           path +
           "?id=" +

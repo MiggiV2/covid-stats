@@ -109,7 +109,9 @@
 
 <script setup>
 import { reactive } from "vue";
-import { HOST } from "../main";
+import { HOST_URL } from "../main";
+
+require('@/assets/header.css');
 
 var mode = reactive({
   text: String,
@@ -157,7 +159,7 @@ function setMode(input) {
 
 function loadLandKreise() {
   if (request.data.length == 0) {
-    fetch(HOST + "covid-stats-api/landkreise")
+    fetch(HOST_URL + "covid-stats-api/landkreise")
       .then((response) => {
         if (response.status == 200) {
           return response.json();
@@ -241,83 +243,3 @@ function saveRange() {
   localStorage.setItem("range", request.range);
 }
 </script>
-
-
-<style scoped>
-.header-wrapped {
-  width: 100vw;
-  height: 4.3rem;
-  background-color: var(--background-color-secondary);
-  border-bottom: 1px solid white;
-  position: fixed;
-}
-.header-content {
-  width: 95%;
-  height: 100%;
-  margin: auto;
-}
-.header-title {
-  padding-top: 12px;
-  padding-left: 7px;
-}
-.header-title:hover {
-  text-decoration: underline;
-}
-.header-dummy {
-  height: 4rem;
-}
-#navbarDropdown {
-  padding-top: 14px;
-  color: white;
-}
-#searchModalLabel {
-  margin-left: 2rem;
-}
-h4 {
-  margin-top: 2px;
-  margin-bottom: 2px;
-}
-.modal-content {
-  background: var(--background-color-primary);
-}
-.search-content {
-  text-align: center;
-  padding-left: 2rem;
-}
-.search-content h4 {
-  margin-bottom: 1rem;
-}
-.search-content a:hover {
-  text-decoration: underline;
-}
-.input-group {
-  max-width: 94%;
-  margin: 1rem auto 1rem;
-}
-.range {
-  max-width: 94%;
-  margin: 1rem auto 0.4rem;
-}
-a {
-  color: unset;
-  text-decoration: unset;
-}
-.header-title a:hover {
-  text-decoration: unset;
-}
-h4 a:hover {
-  text-decoration: unset;
-}
-a:hover {
-  color: unset;
-  text-decoration: underline;
-}
-li a:hover {
-  cursor: pointer;
-}
-@media (max-width: 768px) {
-  .desktop {
-    display: none;
-  }
-}
-</style>
